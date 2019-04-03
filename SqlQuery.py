@@ -39,3 +39,6 @@ for i in range (len(name)):
 	idAccount.append(name[i][0])
 	
 print(idAccount)
+
+# closes the SQL cursor
+cursor.close()

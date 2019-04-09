@@ -18,7 +18,10 @@ database = 'MSERIES_FOR7E_INT_ALEX_AT'
 username = 'operatorbr'
 password = 'access'
 tcon = 'yes'
-string = 'MSERIES_FOR7E_INT_ALEX_AT - FOR7E_INT_ALEXAT - '
+
+
+string = 'MSERIES_FOR7E_INT_ALE_AT - FOR7E_INT_ALEAT - '
+#jobname = 'FORTE7 File Integration'
 jobname = 'Custom Export Process'
 
 

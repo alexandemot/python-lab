@@ -9,14 +9,15 @@ import deterministicaleatorysimulation as deterministic
 
 global interfacename, option, path
 
-
+#interfacename = 'NonEczieste'
 interfacename = 'ImportPrice'
+#interfacename = 'ImportVisitInstance'
 
 option = ['BasicData', 'StressData']
 
 source_path = 'C:\\TFS\\SWProjects\\Unilever - Forte7\\Source Code\\DevBranchs\\Integration\\IntegrationData\\{}\\'
 
-desktop_path = 'C:\\Users\\vit.amota\\Desktop\\'
+desktop_path = 'C:\\Users\\vit.amota\\Desktop'
 
 path = (source_path, desktop_path)
 
@@ -27,7 +28,7 @@ def findfiles_with_interfacename():
 
 	for i in range(len(x)):
 		# if we find a file correspondig to the interface's name, we proceed
-		if (x[i].startswith(interfacename)) == True:
+		if (x[i].startswith(interfacename + '_')) == True:
 			return x[i]
 			break
 		# if not, we do nothing	
@@ -44,6 +45,8 @@ def getlistpaths():
 	
 		_option = each
 		
+		print(each)
+		
 		# tuple "tuple_path" containing the shortcut to BasicData and StressData folder (one at each iteration
 		tuple_path = (path[0].format(_option), path[1].format(_option))
 		
@@ -51,26 +54,42 @@ def getlistpaths():
 		
 		original_filename = findfiles_with_interfacename()
 		
-		filename_withouttxt = original_filename[:-4]
+		if original_filename == None:
+			break
+		
+		
+		final_name = tuple_path[0] + original_filename
+		
+		listpaths.append(final_name)
+		
+		x = os.path.dirname(final_name)
 		
 		if _option == "BasicData":
-			append = "_basic.txt"
+			append = '_basic.txt'
 		elif _option == "StressData":
-			append = "_stress.txt"
-
-		listpaths.append(tuple_path[0] + original_filename)
-		listpaths.append(tuple_path[1] + filename_withouttxt + append)
-	
+			append = '_stress.txt'
+			
+		final_name = final_name.replace(x, desktop_path).replace('.txt', append)
+		
+		listpaths.append(final_name)
 	return listpaths
-	
-	
+
+
+
 def copyfilestodesktop():
+
 	sourceXdestiny = getlistpaths()
 	
-	for i in range(0,3,2):
-		cp(sourceXdestiny[i], sourceXdestiny[i+1])
+	print(sourceXdestiny)
 	
-	
+	if sourceXdestiny == []:
+		print('\n Do nothing!')
+	else:	
+		for i in range(0,3,2):
+			cp(sourceXdestiny[i], sourceXdestiny[i+1])
+
+
+
 copyfilestodesktop()
 
 

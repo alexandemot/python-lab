@@ -15,15 +15,15 @@ class colors:
 	
 	
 server = 'BR-SRVVMCOPA-01\PROJ2014'
-database = 'MSERIES_FOR7E_INT_ALEX_AT'
+database = 'MSERIES_FOR7E_INT_ALE_AT'
 username = 'operatorbr'
 password = 'access'
 tcon = 'yes'
 
 
 string = 'MSERIES_FOR7E_INT_ALE_AT - FOR7E_INT_ALEAT - '
-#jobname = 'FORTE7 File Integration'
-jobname = 'Custom Export Process'
+jobname = 'FORTE7 File Integration'
+#jobname = 'Custom Export Process'
 
 
 query = "EXEC msdb.dbo.sp_start_job N'{}'".format(string+jobname)
@@ -32,6 +32,7 @@ query = "EXEC msdb.dbo.sp_start_job N'{}'".format(string+jobname)
 connection = pyodbc.connect(driver='{SQL Server}', host=server, database=database, trusted_connection=tcon, user=username, password=password)
 connection.execute(query)
 
+'''
 # define our clear function 
 def clear(): 
     # for windows 
@@ -39,6 +40,7 @@ def clear():
         _ = system('cls')
 
 clear()	
+'''
 
 print("\n")
 x = PrettyTable(["Executando o job :"])

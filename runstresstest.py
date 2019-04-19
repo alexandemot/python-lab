@@ -3,6 +3,7 @@ import pyodbc
 from prettytable import PrettyTable
 import os
 from shutil import copy as cp
+import filecmp as filecomparison
 
 import time
 import deterministicaleatorysimulation as deterministic

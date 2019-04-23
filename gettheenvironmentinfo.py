@@ -1,14 +1,33 @@
 
 import os
-from   bs4 	   import BeautifulSoup
-from   fnmatch import fnmatch, fnmatchcase
+from   bs4  import BeautifulSoup
 import re
+import sys
+import glob
+
+
+# message if the user forgets to input the interaface's name
+if (len(sys.argv)) == 1:
+	print('\n\t Please, run again with your environment nick name!')
+	exit()
+else:
+	envrnmt_id = '_' + str(sys.argv[1]) + " - "
+
 
 # supposing that the EnvironmentSummary.html file is on Desktop
-os.chdir('C:\\Users\\vit.amota\\Desktop')
+#os.chdir('C:\\Users\\vit.amota\\Desktop')
+
+# go to the standard repository
+os.chdir(r'\\swntdev2\mSeriesDeploy\Installation\Environments\Active\mSeries')
+
+# check if there is a directory with the provided ID
+dir = glob.glob('*{}*'.format(envrnmt_id))[0]
+
+# enters inside the users directory
+os.chdir(os.path.abspath(dir))
 
 
-# bring the html as a beautiful soup instance
+# bring the EnvironmentSummary.html as a beautiful soup instance
 with open("EnvironmentSummary.html") as htmlopened:
 	soup = BeautifulSoup(htmlopened, features="html.parser")
 

@@ -20,10 +20,17 @@ else:
 # go to the standard repository
 os.chdir(r'\\swntdev2\mSeriesDeploy\Installation\Environments\Active\mSeries')
 
-# check if there is a directory with the provided ID
-dir = glob.glob('*{}*'.format(envrnmt_id))[0]
 
-# enters inside the users directory
+# check if there is a directory with the provided ID
+try:
+	dir = glob.glob('*{}*'.format(envrnmt_id))[0]
+# if not, interrupt execution
+except IndexError:
+	print('\n\t Not found directory with the ID name provided.')
+	exit()
+	
+
+# if there is a directory with the provided ID, enters inside the users directory
 os.chdir(os.path.abspath(dir))
 
 

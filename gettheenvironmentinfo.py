@@ -27,7 +27,7 @@ dir = glob.glob('*{}*'.format(envrnmt_id))[0]
 os.chdir(os.path.abspath(dir))
 
 
-# bring the EnvironmentSummary.html as a beautiful soup instance
+# bring the 'EnvironmentSummary.html' as a beautiful soup instance
 with open("EnvironmentSummary.html") as htmlopened:
 	soup = BeautifulSoup(htmlopened, features="html.parser")
 

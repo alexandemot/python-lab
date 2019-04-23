@@ -1,54 +1,96 @@
 
 import pyodbc
 from prettytable import PrettyTable
-from os import system, name 
-    
-class colors:
-	HEADER    = '\033[95m'
-	BLUE      = '\033[94m'
-	GREEN     = '\033[92m'
-	WARNING   = '\033[93m'
-	FAIL 	  = '\033[91m'    
-	BOLD 	  = '\033[1m'
-	UNDERLINE = '\033[4m'
-	CLEANUP	  = '\033[0m'
+import colorama
 	
-	
+global jobname, jobquery, checkquery
+
+
+#==========================================#
+#			environments presets		   #
+#==========================================#
+
 server = 'BR-SRVVMCOPA-01\PROJ2014'
-database = 'MSERIES_FOR7E_INT_ALE_AT'
+database = 'MSERIES_FOR7E_INT_LE_AT'
 username = 'operatorbr'
 password = 'access'
 tcon = 'yes'
-
-
-string = 'MSERIES_FOR7E_INT_ALE_AT - FOR7E_INT_ALEAT - '
+envrnmt_index = 'MSERIES_FOR7E_INT_LE_AT - FOR7E_INT_LEAT - '
 jobname = 'FORTE7 File Integration'
-#jobname = 'Custom Export Process'
+
+#==========================================#
+
+jobquery = "EXEC msdb.dbo.sp_start_job N'{}'".format(envrnmt_index + jobname)
 
 
-query = "EXEC msdb.dbo.sp_start_job N'{}'".format(string+jobname)
+#checkquery = "select top 1 message, instance_id from msdb.dbo.sysjobhistory order by instance_id desc"
 
 
-connection = pyodbc.connect(driver='{SQL Server}', host=server, database=database, trusted_connection=tcon, user=username, password=password)
-connection.execute(query)
+# formatted execution message for alerting the user (on console screen)
+def message():
+	
+	print("\n")
+	message = PrettyTable(["Executing the job :"])
+	message.add_row(["FORTE7 File Integration"])
+	print(message)
+	print("\n")
+
+
+# function for executing the SQL query
+def executequery(query):
+
+	_query = query
+
+	# start a connection
+	connection = pyodbc.connect(driver='{SQL Server}', host=server, database=database, 
+	trusted_connection=tcon, user=username, password=password)
+
+	# create a cursor
+	mycursor = connection.cursor()
+
+	# send the query to the SQL server
+	mycursor.execute(_query)
+	
+	# print the execution message on screen
+	message()
+
+	# closes the SQL cursor
+	mycursor.close()
+	
 
 '''
-# define our clear function 
-def clear(): 
-    # for windows 
-    if name == 'nt': 
-        _ = system('cls')
+def checkifjobhasended(instance_id):
 
-clear()	
+	previous_instance_id = instance_id
+	
+	mycursor = connection.cursor()
+	
+	# send the query to the SQL server
+	mycursor.execute(checkquery)
+	myresult = mycursor.fetchall()
+	
+	_instance_id = myresult[0][1]
+
+	# if the message does not contains "succeeded", the result is -1
+	if ((myresult[0][0]).find('succeeded') != -1): # that is, found the "succeeded" word
+		print(colors.BLUE + '\t Job executed with success! \n'.format(_instance_id) + colors.CLEANUP)
+	else:
+		# that is, the the message does not contains the word "succeeded" return "-1"
+		print(colors.RED + '\t Job not yet finished! Please, wait for some seconds. \n' + colors.CLEANUP)
+		
+	# closes the SQL cursor
+	mycursor.close()
+
+
+# send the query to the SQL server
+mycursor.execute(checkquery)
+
+myresult = mycursor.fetchall()
+instance_id = myresult[0][1]
 '''
 
-print("\n")
-x = PrettyTable(["Executando o job :"])
-x.add_row([jobname])
-print(x)
-print("\n")
+executequery(jobquery)
 
 
-
-# tabela de consulta de status de execução de job
-#SELECT * FROM msdb.dbo.sysjobhistory
+# execute the function for checking if the job has ended
+#checkifjobhasended(instance_id)

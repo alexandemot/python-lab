@@ -6,51 +6,74 @@ import sys
 import glob
 
 
-# message if the user forgets to input the interaface's name
-if (len(sys.argv)) == 1:
-	print('\n\t Please, run again with your environment nick name!')
-	exit()
-else:
-	envrnmt_id = '_' + str(sys.argv[1]) + " - "
+def scan(envrnmt_id):
 
+	# validating if the parameter provided is empty, like ".scan('')"
+	# if is null, it will just return an exception error: TypeError: scan() missing 1 required positional argument
+	if (envrnmt_id.strip()) == '':
+		print('\n\t Some ID is required for continue. Please, run again with any ID!\n')
+		return 
 
-# supposing that the EnvironmentSummary.html file is on Desktop
-#os.chdir('C:\\Users\\vit.amota\\Desktop')
-
-# go to the standard repository
-os.chdir(r'\\swntdev2\mSeriesDeploy\Installation\Environments\Active\mSeries')
-
-
-# check if there is a directory with the provided ID
-try:
-	dir = glob.glob('*{}*'.format(envrnmt_id))[0]
-# if not, interrupt execution
-except IndexError:
-	print('\n\t Not found directory with the ID name provided.')
-	exit()
+	_envrnmt_id = '_' + envrnmt_id + " - "
 	
-
-# if there is a directory with the provided ID, enters inside the users directory
-os.chdir(os.path.abspath(dir))
-
-
-# bring the 'EnvironmentSummary.html' as a beautiful soup instance
-with open("EnvironmentSummary.html") as htmlopened:
-	soup = BeautifulSoup(htmlopened, features="html.parser")
+	# go to the standard repository
+	os.chdir(r'\\swntdev2\mSeriesDeploy\Installation\Environments\Active\mSeries')
 
 
-# getting the div which contains the information we want
-splitted = soup.find("div", {"class": "style3"}).text.split('- ')
+	# check if there is a directory with the provided ID
+	try:
+		dir = glob.glob('*{}*'.format(_envrnmt_id))[0]
+	# if not, interrupt execution
+	except IndexError:
+		print('\n\t Not found directory with the ID name provided.')
+
+	try:
+		# if there is a directory with the provided ID, enters inside the users directory
+		os.chdir(os.path.abspath(dir))
+		
+		# bring the 'EnvironmentSummary.html' as a beautiful soup instance
+		with open("EnvironmentSummary.html") as htmlopened:
+			soup = BeautifulSoup(htmlopened, features="html.parser")
 
 
-# getting only the part afer ":" for the fields Database and Server
-database = splitted[1].split(': ')[1]
-server = splitted[2].split(': ')[1]
+		# getting the div which contains the information we want
+		splitted = soup.find("div", {"class": "style3"}).text.split('- ')
 
 
-# mounting the complete job string for later executions
-completejobname = (soup(text=re.compile('FORTE7 File Integration'))[0].split(': ')[1])
+		# getting only the part afer ":" for the fields Database and Server
+		database = splitted[1].split(': ')[1]
+		server = splitted[2].split(': ')[1]
 
-print('\n' + database)
-print('\n' + server)
-print('\n' + completejobname)
+
+		# mounting the complete job string for later executions
+		completejobname = (soup(text=re.compile('FORTE7 File Integration'))[0].split(': ')[1])
+		
+		environmentdata = (server, database, completejobname)
+		
+		return environmentdata
+	
+	except UnboundLocalError as error:
+		# Output expected UnboundLocalErrors.
+		print('\n\t Please, run again with your another (correct) ID!')
+
+
+
+if __name__ == '__main__':
+	
+	try:
+		# message if the user forgets to input the interaface's name
+		if (len(sys.argv)) == 1:
+			print('\n\t Please, run again with your environment ID!')
+			exit()
+		else:	
+			envrnmt_id = str(sys.argv[1])
+	
+		data = scan(envrnmt_id)
+		
+		if data != None:
+			print("\n")
+			for each in data:
+				print(each)
+		
+	except NameError:
+		exit()

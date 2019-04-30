@@ -1,31 +1,50 @@
 
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+'															                    '
+'	This module makes a complete search for files on the default user (local)   '
+'	TFS directory, rename them as basic/stress and send a copy of each one		'
+'	to the same user/machine Desktop                                            '
+'															         			'
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
 import os
 from shutil import copy
 import filecmp as filecomparison
 import sys
 
-global interfacename, basicstress_data, source_path, path
+global interfacename, select_basic_or_stress, source_path, path
 
 
-if (len(sys.argv)) == 1:
-	print('\n\t Please, run again with a interface name!')
-	interfacename = 'None'
-else:
-	interfacename = str(sys.argv[1])
-	
-
+# the default local TFS directory
 source_path = 'C:\\TFS\\SWProjects\\Unilever - Forte7\\Source Code\\DevBranchs\\Integration\\IntegrationData\\{}\\'
 
-desktop_dirname = 'C:\\Users\\vit.amota\\Desktop'
+desktop = os.path.join(os.environ["HOMEPATH"], "Desktop")
 
-basicstress_data = [['BasicData','basic'], ['StressData','stress']]
+select_basic_or_stress = [['BasicData','basic'], ['StressData','stress']]
 
-listpath = [source_path.format(basicstress_data[0][0]), source_path.format(basicstress_data[1][0])]
+# format the TFS directory name either for BasicData and StressData for later searching/manipulation
+listpath = [source_path.format(select_basic_or_stress[0][0]), source_path.format(select_basic_or_stress[1][0])]
 
 originalfiles, desktopfiles = [], []
 
 
-def findfileswithinterfacename():
+# this function is executed when called by console
+def now():
+
+	try:
+		# message if the user forgets to input the interface's name
+		if (len(sys.argv)) == 1:
+			print('\n\t Please, run again with a interface name!')
+		else:	
+			interfacename = str(sys.argv[1])
+			getthefiles(interfacename)
+		
+	except NameError:
+		exit()
+
+
+# check if there is files either on Basic either on StressData directories
+def findfileswithinterfacename(interfacename):
 	
 	for each in listpath:
 	
@@ -38,54 +57,68 @@ def findfileswithinterfacename():
 			if (files_on_dir[i].startswith(interfacename + '_')) == True:
 				originalfiles.append(each + files_on_dir[i])
 	
+	# if there is no file matching the interface provided, let the user know
 	if len(originalfiles) == 0:
-		print('\n\t Not found files with the interafece name: ' + interfacename + '\n')
+		if interfacename == '':
+			interfacename = interfacename + '\n'
+		print('\n\t Not found files with the interface name: ' + interfacename)
 		return (None)
 	
 	else:
 		return originalfiles
 
 
+# check if basic and stress files has the same size (in bytes)
 def checkifilesaresamesize(originalfiles):
 
 	if originalfiles == None :
 		print ('\n\t No files provided!' + '\n')
-	
+	# if they has the same size, list only one of them for copying the files to Desktop
 	elif (filecomparison.cmp(originalfiles[0], originalfiles[1])) == True:
 		originalfiles.remove(originalfiles[0])
 
 	return originalfiles
 
 	
+# prepare the files' names for the Desktop and files' manipulation during the tests ("*_basic.txt" or "*_stress.txt")
 def renamedesktopfiles(originalfiles):
 	
 	for each in originalfiles:
-		desktopfiles.append(each.replace(os.path.dirname(each), desktop_dirname))
+		desktopfiles.append(each.replace(os.path.dirname(each), desktop))
 	
 	for i in range(len(desktopfiles)):
-		desktopfiles[i] = desktopfiles[i].replace('.txt', '_'+basicstress_data[i][1]+'.txt')
+		desktopfiles[i] = desktopfiles[i].replace('.txt', '_'+select_basic_or_stress[i][1]+'.txt')
 		
 	return desktopfiles
 	
 	
+# copy the files found on TFS to the user Desktop - with their new names ("*_basic.txt" or "*_stress.txt")
 def copythefiles(originalfiles, desktopfiles):
 
 	for i in range(len(originalfiles)):
 		copy(originalfiles[i], desktopfiles[i])
 
 
-def main():
+# the main function
+def getthefiles(interfacename):
 
-	myfiles = findfileswithinterfacename()
+	myfiles = findfileswithinterfacename(interfacename)
 	
 	if myfiles == None:
 		pass
 		
 	else:
+		# first: check if file(s) exist(s)
 		myfiles = checkifilesaresamesize(myfiles)
+		# second: rename the file(s) (for convenience)
 		myfiles = renamedesktopfiles(myfiles)
-		
+		# third: finally, copy/move the files to the Desktop
 		copythefiles(originalfiles, desktopfiles)	
+		# last: notify (let the user know)
+		print('\n\t Done! Please, check the file(s) in your Desktop.\n')
 	
-main()	
-	
+
+
+if __name__ == '__main__':
+
+	now()

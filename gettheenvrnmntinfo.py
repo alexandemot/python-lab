@@ -2,7 +2,7 @@
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 '															                    '
 '	This module makes a complete search on the standard shared directories      '
-,   in order to find the user account information to the user (when called via  '
+'   in order to find the user account information to the user (when called via  '
 '	console); if the module is imported inside another pyhon module, the        '
 '	information is parsed/returned as a python "tuple"							'
 '															         			'
@@ -46,6 +46,8 @@ def scan(envrnmt_id):
 
 		# getting the div which contains the information we want
 		splitted = soup.find("div", {"class": "style3"}).text.split('- ')
+		
+		print(splitted)
 
 		# getting only the part afer ":" for the fields Database and Server
 		database = splitted[1].split(': ')[1]

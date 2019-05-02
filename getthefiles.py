@@ -108,12 +108,15 @@ def getthefiles(interfacename):
 		pass
 		
 	else:
-		# first: check if file(s) exist(s)
+		# first: check if file(s) exist
 		myfiles = checkifilesaresamesize(myfiles)
-		# second: rename the file(s) (for convenience)
+		
+		# second: rename the file(s) with "*_basic.txt" or "*_stress.txt" (for convenience)
 		myfiles = renamedesktopfiles(myfiles)
+		
 		# third: finally, copy/move the files to the Desktop
 		copythefiles(originalfiles, desktopfiles)	
+		
 		# last: notify (let the user know)
 		print('\n\t Done! Please, check the file(s) in your Desktop.\n')
 	

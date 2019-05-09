@@ -29,7 +29,7 @@ originalfiles, desktopfiles = [], []
 
 
 # this function is executed when called by console
-def now():
+def main():
 
 	try:
 		# message if the user forgets to input the interface's name
@@ -37,14 +37,15 @@ def now():
 			print('\n\t Please, run again with a interface name!')
 		else:	
 			interfacename = str(sys.argv[1])
-			getthefiles(interfacename)
+			get_thefiles(interfacename)
 		
 	except NameError:
 		exit()
 
 
+
 # check if there is files either on Basic either on StressData directories
-def findfileswithinterfacename(interfacename):
+def findfiles_with_interfacename(interfacename):
 	
 	for each in listpath:
 	
@@ -68,8 +69,9 @@ def findfileswithinterfacename(interfacename):
 		return originalfiles
 
 
+
 # check if basic and stress files has the same size (in bytes)
-def checkifilesaresamesize(originalfiles):
+def checkif_filesare_samesize(originalfiles):
 
 	if originalfiles == None :
 		print ('\n\t No files provided!' + '\n')
@@ -79,9 +81,10 @@ def checkifilesaresamesize(originalfiles):
 
 	return originalfiles
 
+
 	
 # prepare the files' names for the Desktop and files' manipulation during the tests ("*_basic.txt" or "*_stress.txt")
-def renamedesktopfiles(originalfiles):
+def rename_desktopfiles(originalfiles):
 	
 	for each in originalfiles:
 		desktopfiles.append(each.replace(os.path.dirname(each), desktop))
@@ -91,7 +94,8 @@ def renamedesktopfiles(originalfiles):
 		
 	return desktopfiles
 	
-	
+
+
 # copy the files found on TFS to the user Desktop - with their new names ("*_basic.txt" or "*_stress.txt")
 def copythefiles(originalfiles, desktopfiles):
 
@@ -99,29 +103,43 @@ def copythefiles(originalfiles, desktopfiles):
 		copy(originalfiles[i], desktopfiles[i])
 
 
-# the main function
-def getthefiles(interfacename):
 
-	myfiles = findfileswithinterfacename(interfacename)
+# the main function
+def get_thefiles(interfacename):
+
+	print('\n\t Searching for an file with the name provided ("{}")...\n'.format(interfacename))
+
+	myfiles = findfiles_with_interfacename(interfacename)
 	
+	# first: check if the the file(s) exist
 	if myfiles == None:
 		pass
 		
 	else:
-		# first: check if file(s) exist
-		myfiles = checkifilesaresamesize(myfiles)
+		# second: check if the the file(s) are of same size (to decide if run or not the comparison
+		myfiles = checkif_filesare_samesize(myfiles)
 		
-		# second: rename the file(s) with "*_basic.txt" or "*_stress.txt" (for convenience)
-		myfiles = renamedesktopfiles(myfiles)
+		# third: rename the file(s) with "*_basic.txt" or "*_stress.txt" (for convenience)
+		myfiles = rename_desktopfiles(myfiles)
 		
-		# third: finally, copy/move the files to the Desktop
-		copythefiles(originalfiles, desktopfiles)	
+		# check if already has such files on Desktop
+		result = [os.path.exists(each) for each in myfiles]
 		
-		# last: notify (let the user know)
-		print('\n\t Done! Please, check the file(s) in your Desktop.\n')
+		if result[0] == True:
+		
+			print("\n\t There is such file(s) on Desktop, already. Bypassing!")
+			pass
+		
+		else:
+		
+			# fourth: finally, copy/move the files to the Desktop
+			copythefiles(originalfiles, desktopfiles)	
+		
+			# last: notify (let the user know)
+			print("\n [ Done! ] Please, check the file(s) in your Desktop.\n \n")
 	
 
 
 if __name__ == '__main__':
 
-	now()
+	main()

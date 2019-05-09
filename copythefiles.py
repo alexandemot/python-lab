@@ -17,19 +17,23 @@
 
 import os
 from   shutil import copy
+import gettheenvironmentinfo as get
+
+global desktop, inbox
 
 
-desktop = os.path.join(os.environ["HOMEPATH"], "Desktop")
-
-inbox = r"//BR-SRVVMCOPA-01/SpringWireless/Project/Shared/FOR7E_MOBL_ALE/Dev/FileIntegration/Users/operatorbr/Import/Inbox"
-
+desktop = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
 
 
 
 # search/list the txt files - that is, the ones for submitting for testing - which there is on Desktop
-def listtxtfilesondesktop():
+def list_txtfiles_ondesktop():
+	
 	
 	os.chdir(desktop)
+	
+	print(desktop)
+	
 	
 	mydir, myfiles = os.listdir(), []
 
@@ -39,7 +43,7 @@ def listtxtfilesondesktop():
 
 
 # just "organize" the files in order by size (in Bytes) correlated to basic ("lighter") and stress ("heavy")
-def sortfilesbysize(myfiles):
+def sortfiles_bysize(myfiles):
 
 	if len(myfiles) == 1:
 		pass
@@ -51,23 +55,37 @@ def sortfilesbysize(myfiles):
 	
 
 # just copy the files from the Desktop to the Inbox Folder (basic and stress, respectively)
-def copythefilestoInboxFolder(myfiles):
+def copy_fromdesktop_toinbox(myfiles, inbox):
 
 	for each in myfiles:
 		source = desktop + '\\' + each
-		print("\n\t Moving the file: " + each + '\n')
+		print("\t Copying now the file: " + each + '\n')
 		copy(source, inbox)
-		os.system('cls')
-		print("\n\t [ Done! ] \n")
+		print("\n[ Done! ] \n")
 		
 
 def main():
 
-	x = listtxtfilesondesktop()
-	x = sortfilesbysize(x)
-	copythefilestoInboxFolder(x)
+	x = list_txtfiles_ondesktop()
+	x = sortfiles_bysize(x)
+	copy_fromdesktop_toinbox(x, inbox)
 
 
 if __name__ == '__main__':
 
+	# getting the File Inbox folder, from the user and the standard directory
+	inbox = get.nowplease()[3]
+	
 	main()
+	
+
+else:
+
+	def from_desktop_to_inbox(inbox):
+
+		_inbox = inbox
+
+		x = list_txtfiles_ondesktop()
+		x = sortfiles_bysize(x)
+		copy_fromdesktop_toinbox(x, _inbox)
+	

@@ -11,8 +11,9 @@ import os
 from shutil import copy
 import filecmp as filecomparison
 import sys
+from fnmatch import fnmatch
 
-global interfacename, select_basic_or_stress, source_path, path
+global select_basic_or_stress, source_path, path
 
 
 # the default local TFS directory
@@ -46,6 +47,10 @@ def main():
 
 # check if there is files either on Basic either on StressData directories
 def findfiles_with_interfacename(interfacename):
+
+	# first of all, add a '_*' in the end of the string of the interfacename 
+	# in order to fnmatch wild card pattern
+	interfacename = interfacename + '_*'
 	
 	for each in listpath:
 	
@@ -55,14 +60,15 @@ def findfiles_with_interfacename(interfacename):
 
 		for i in range(len(files_on_dir)):
 			# if we find a file correspondig to the interface's name, we proceed
-			if (files_on_dir[i].startswith(interfacename + '_')) == True:
+			if (fnmatch(files_on_dir[i], interfacename)) == True:
 				originalfiles.append(each + files_on_dir[i])
-	
+
+
 	# if there is no file matching the interface provided, let the user know
 	if len(originalfiles) == 0:
 		if interfacename == '':
 			interfacename = interfacename + '\n'
-		print('\n\t Not found files with the interface name: ' + interfacename)
+		print('\n\t Not found files with the interface name: ' + interfacename[:-2])
 		return (None)
 	
 	else:

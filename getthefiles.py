@@ -7,11 +7,13 @@
 '															         			'
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
-import os
-from shutil import copy
+
 import filecmp as filecomparison
+from   fnmatch import fnmatch
+import os
+from   shutil import copy
 import sys
-from fnmatch import fnmatch
+
 
 global select_basic_or_stress, source_path, path
 
@@ -88,21 +90,22 @@ def checkif_filesare_samesize(originalfiles):
 	return originalfiles
 
 
-	
-# prepare the files' names for the Desktop and files' manipulation during the tests ("*_basic.txt" or "*_stress.txt")
+
+# prepare the files' names for the Desktop and files' manipulation during the tests 
 def rename_desktopfiles(originalfiles):
 	
 	for each in originalfiles:
 		desktopfiles.append(each.replace(os.path.dirname(each), desktop))
 	
+	# rename the files according with its type ("*_basic.txt" or "*_stress.txt")
 	for i in range(len(desktopfiles)):
-		desktopfiles[i] = desktopfiles[i].replace('.txt', '_'+select_basic_or_stress[i][1]+'.txt')
+		desktopfiles[i] = desktopfiles[i].split('.txt')[0] + '_' + select_basic_or_stress[i][1] + '.txt'
 		
 	return desktopfiles
-	
 
 
-# copy the files found on TFS to the user Desktop - with their new names ("*_basic.txt" or "*_stress.txt")
+
+# copy the files found on TFS to the user Desktop (with their new names: "*_basic.txt" or "*_stress.txt")
 def copythefiles(originalfiles, desktopfiles):
 
 	for i in range(len(originalfiles)):
@@ -123,7 +126,7 @@ def get_thefiles(interfacename):
 		
 	else:
 		# second: check if the the file(s) are of same size (to decide if run or not the comparison
-		myfiles = checkif_filesare_samesize(myfiles)
+		myfiles = checkif_filesare_samesize(myfiles) 
 		
 		# third: rename the file(s) with "*_basic.txt" or "*_stress.txt" (for convenience)
 		myfiles = rename_desktopfiles(myfiles)
@@ -133,7 +136,7 @@ def get_thefiles(interfacename):
 		
 		if result[0] == True:
 		
-			print("\n\t There is such file(s) on Desktop, already. Bypassing!")
+			print("\n\t There is already such file(s) on Desktop. Bypassing!")
 			pass
 		
 		else:

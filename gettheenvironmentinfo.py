@@ -9,11 +9,11 @@
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 
-import os
 from   bs4  import BeautifulSoup
+import glob
+import os
 import re
 import sys
-import glob
 
 
 def scan(envrnmt_id):
